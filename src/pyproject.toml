@@ -1,0 +1,93 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clash-cli" 
+version = "1.0.1"
+description = "Clash的linux命令行实现"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "whillhill", email = "ooooofish@126.com"}
+]
+maintainers = [
+    {name = "whillhill", email = "ooooofish@126.com"}
+]
+keywords = ["clash", "proxy", "vpn", "linux", "systemd", "mihomo"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: Proxy Servers",
+    "Topic :: System :: Networking",
+    "Topic :: System :: Systems Administration",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0.0",
+    "pyyaml>=6.0",
+    "requests>=2.28.0",
+    "psutil>=5.9.0",
+    "rich>=12.0.0",
+    "httpx>=0.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=22.0",
+    "flake8>=5.0",
+    "mypy>=1.0",
+    "pre-commit>=2.20",
+    "build>=0.10.0",
+    "twine>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/whillhill/clash-cli"
+Repository = "https://github.com/whillhill/clash-cli"
+Documentation = "https://github.com/whillhill/clash-cli/wiki"
+"Bug Tracker" = "https://github.com/whillhill/clash-cli/issues"
+
+[project.scripts]
+clash-cli = "clash_cli.main:main"  
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["clash_cli*"]
+
+[tool.setuptools.package-data]
+clash_cli = [
+    "resources/*.yaml",
+    "resources/*.yml",
+    "resources/*.json",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = [
+    "--strict-markers",
+    "--verbose",
+]

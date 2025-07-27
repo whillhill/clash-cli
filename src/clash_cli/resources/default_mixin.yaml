@@ -1,0 +1,55 @@
+# clash-cli 默认 Mixin 配置
+# 此配置会与订阅配置合并，优先级高于订阅配置
+
+# 系统代理设置
+system-proxy:
+  enable: true
+
+# Web 控制台配置
+external-controller: "0.0.0.0:9090"
+external-ui: public
+secret: ""
+
+# 允许局域网访问
+allow-lan: false
+
+# 用户认证（可选）
+authentication: []
+  # - "username:password"
+
+# 自定义规则（会添加到订阅规则前面）
+rules:
+  - DOMAIN,api64.ipify.org,DIRECT  # 用于获取公网 IP
+
+# Tun 模式配置
+tun:
+  enable: false
+  stack: system
+  auto-route: true
+  auto-redir: true
+  auto-redirect: true
+  auto-detect-interface: true
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  strict-route: true
+  exclude-interface: []
+
+# DNS 配置
+dns:
+  enable: true
+  listen: "0.0.0.0:1053"
+  enhanced-mode: fake-ip
+  nameserver:
+    - 114.114.114.114
+    - 8.8.8.8
+  fallback:
+    - 1.1.1.1
+    - 8.8.4.4
+
+# 日志配置
+log-level: info
+
+# 实验性功能
+experimental:
+  ignore-resolve-fail: true

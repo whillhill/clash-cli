@@ -49,7 +49,7 @@ _set_var() {
         _SHELL=fish
     }
 
-    # rc文件路径
+    # rc????
     command -v bash >&/dev/null && {
         SHELL_RC_BASH="${home}/.bashrc"
     }
@@ -60,7 +60,7 @@ _set_var() {
         SHELL_RC_FISH="${home}/.config/fish/conf.d/clash-cli.fish"
     }
 
-    # 定时任务路径
+    # ??????
     local os_info=$(cat /etc/os-release)
     echo "$os_info" | grep -iqsE "rhel|centos" && CLASH_CRON_TAB="/var/spool/cron/$user"
     echo "$os_info" | grep -iqsE "debian|ubuntu" && CLASH_CRON_TAB="/var/spool/cron/crontabs/$user"
@@ -102,8 +102,8 @@ _set_rc() {
     [ -n "$SHELL_RC_FISH" ] && /usr/bin/install $SCRIPT_FISH "$SHELL_RC_FISH"
 }
 
-# 默认集成、安装mihomo内核
-# 移除/删除mihomo：下载安装clash内核
+# ???????mihomo??
+# ??/??mihomo?????clash??
 function _get_kernel() {
     [ -f "$ZIP_CLASH" ] && {
         ZIP_KERNEL=$ZIP_CLASH
@@ -117,14 +117,14 @@ function _get_kernel() {
 
     [ ! -f "$ZIP_MIHOMO" ] && [ ! -f "$ZIP_CLASH" ] && {
         local arch=$(uname -m)
-        _failcat "${ZIP_BASE_DIR}：未检测到可用的内核压缩包"
+        _failcat "${ZIP_BASE_DIR}?????????????"
         _download_clash "$arch"
         ZIP_KERNEL=$ZIP_CLASH
         BIN_KERNEL=$BIN_CLASH
     }
 
     BIN_KERNEL_NAME=$(basename "$BIN_KERNEL")
-    _okcat "安装内核：$BIN_KERNEL_NAME"
+    _okcat "?????$BIN_KERNEL_NAME"
 }
 
 _get_random_port() {
@@ -139,10 +139,10 @@ function _get_proxy_port() {
 
     _is_already_in_use "$MIXED_PORT" "$BIN_KERNEL_NAME" && {
         local newPort=$(_get_random_port)
-        local msg="端口占用：${MIXED_PORT} 🎲 随机分配：$newPort"
+        local msg="?????${MIXED_PORT} ?? ?????$newPort"
         sudo "$BIN_YQ" -i ".mixed-port = $newPort" $CLASH_CONFIG_RUNTIME
         MIXED_PORT=$newPort
-        _failcat '🎯' "$msg"
+        _failcat '??' "$msg"
     }
 }
 
@@ -153,10 +153,10 @@ function _get_ui_port() {
 
     _is_already_in_use "$UI_PORT" "$BIN_KERNEL_NAME" && {
         local newPort=$(_get_random_port)
-        local msg="端口占用：${UI_PORT} 🎲 随机分配：$newPort"
+        local msg="?????${UI_PORT} ?? ?????$newPort"
         sudo "$BIN_YQ" -i ".external-controller = \"0.0.0.0:$newPort\"" $CLASH_CONFIG_RUNTIME
         UI_PORT=$newPort
-        _failcat '🎯' "$msg"
+        _failcat '??' "$msg"
     }
 }
 
@@ -176,7 +176,7 @@ _get_color_msg() {
 
 function _okcat() {
     local color=#c8d6e5
-    local emoji=😼
+    local emoji=??
     [ $# -gt 1 ] && emoji=$1 && shift
     local msg="${emoji} $1"
     _get_color_msg "$color" "$msg" && return 0
@@ -184,7 +184,7 @@ function _okcat() {
 
 function _failcat() {
     local color=#fd79a8
-    local emoji=😾
+    local emoji=??
     [ $# -gt 1 ] && emoji=$1 && shift
     local msg="${emoji} $1"
     _get_color_msg "$color" "$msg" >&2 && return 1
@@ -199,7 +199,7 @@ function _quit() {
 function _error_quit() {
     [ $# -gt 0 ] && {
         local color=#f92f60
-        local emoji=📢
+        local emoji=??
         [ $# -gt 1 ] && emoji=$1 && shift
         local msg="${emoji} $1"
         _get_color_msg "$color" "$msg"
@@ -223,9 +223,9 @@ function _is_root() {
 }
 
 function _valid_env() {
-    _is_root || _error_quit "需要 root 或 sudo 权限执行"
-    [ -n "$ZSH_VERSION" ] && [ -n "$BASH_VERSION" ] && _error_quit "仅支持：bash、zsh"
-    [ "$(ps -p 1 -o comm=)" != "systemd" ] && _error_quit "系统不具备 systemd"
+    _is_root || _error_quit "?? root ? sudo ????"
+    [ -n "$ZSH_VERSION" ] && [ -n "$BASH_VERSION" ] && _error_quit "????bash?zsh"
+    [ "$(ps -p 1 -o comm=)" != "systemd" ] && _error_quit "????? systemd"
 }
 
 function _valid_config() {
@@ -234,7 +234,7 @@ function _valid_config() {
         cmd="$BIN_KERNEL -d $(dirname "$1") -f $1 -t"
         msg=$(eval "$cmd") || {
             eval "$cmd"
-            echo "$msg" | grep -qs "unsupport proxy type" && _error_quit "不支持的代理协议，请安装 mihomo 内核"
+            echo "$msg" | grep -qs "unsupport proxy type" && _error_quit "???????????? mihomo ??"
         }
     }
 }
@@ -260,11 +260,11 @@ _download_clash() {
         sha256sum='c45b39bb241e270ae5f4498e2af75cecc0f03c9db3c0db5e55c8c4919f01afdd'
         ;;
     *)
-        _error_quit "未知的架构版本：$arch，请自行下载对应版本至 ${ZIP_BASE_DIR} 目录下：https://downloads.clash.wiki/ClashPremium/"
+        _error_quit "????????$arch??????????? ${ZIP_BASE_DIR} ????https://downloads.clash.wiki/ClashPremium/"
         ;;
     esac
 
-    _okcat '⏳' "正在下载：clash：${arch} 架构..."
+    _okcat '?' "?????clash?${arch} ??..."
     local clash_zip="${ZIP_BASE_DIR}/$(basename $url)"
     curl \
         --progress-bar \
@@ -276,7 +276,7 @@ _download_clash() {
         --output "$clash_zip" \
         "$url"
     echo $sha256sum "$clash_zip" | sha256sum -c ||
-        _error_quit "下载失败：请自行下载对应版本至 ${ZIP_BASE_DIR} 目录下：https://downloads.clash.wiki/ClashPremium/"
+        _error_quit "??????????????? ${ZIP_BASE_DIR} ????https://downloads.clash.wiki/ClashPremium/"
 }
 
 _download_raw_config() {
@@ -325,17 +325,17 @@ function _download_config() {
     local url=$2
     [ "${url:0:4}" = 'file' ] && return 0
     _download_raw_config "$dest" "$url" || return 1
-    _okcat '🍃' '下载成功：内核验证配置...'
+    _okcat '??' '???????????...'
     _valid_config "$dest" || {
-        _failcat '🍂' "验证失败：尝试订阅转换..."
-        _download_convert_config "$dest" "$url" || _failcat '🍂' "转换失败：请检查日志：$BIN_SUBCONVERTER_LOG"
+        _failcat '??' "???????????..."
+        _download_convert_config "$dest" "$url" || _failcat '??' "???????????$BIN_SUBCONVERTER_LOG"
     }
 }
 
 _start_convert() {
     _is_already_in_use $BIN_SUBCONVERTER_PORT 'subconverter' && {
         local newPort=$(_get_random_port)
-        _failcat '🎯' "端口占用：$BIN_SUBCONVERTER_PORT 🎲 随机分配：$newPort"
+        _failcat '??' "?????$BIN_SUBCONVERTER_PORT ?? ?????$newPort"
         [ ! -e "$BIN_SUBCONVERTER_CONFIG" ] && {
             sudo /bin/cp -f "$BIN_SUBCONVERTER_DIR/pref.example.yml" "$BIN_SUBCONVERTER_CONFIG"
         }
@@ -343,12 +343,12 @@ _start_convert() {
         BIN_SUBCONVERTER_PORT=$newPort
     }
     local start=$(date +%s)
-    # 子shell运行，屏蔽kill时的输出
+    # ?shell?????kill????
     (sudo "$BIN_SUBCONVERTER" 2>&1 | sudo tee "$BIN_SUBCONVERTER_LOG" >/dev/null &)
     while ! _is_bind "$BIN_SUBCONVERTER_PORT" >&/dev/null; do
         sleep 1s
         local now=$(date +%s)
-        [ $((now - start)) -gt 1 ] && _error_quit "订阅转换服务未启动，请检查日志：$BIN_SUBCONVERTER_LOG"
+        [ $((now - start)) -gt 1 ] && _error_quit "????????????????$BIN_SUBCONVERTER_LOG"
     done
 }
 _stop_convert() {

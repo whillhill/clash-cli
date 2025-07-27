@@ -1,3 +1,4 @@
+#!/bin/bash
 # shellcheck disable=SC2148
 # shellcheck disable=SC1091
 . script/common.sh >&/dev/null
