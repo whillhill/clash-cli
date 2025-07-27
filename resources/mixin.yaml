@@ -1,0 +1,42 @@
+# 系统代理配置
+system-proxy:
+  enable: true
+
+# Web 控制台配置
+external-controller: "0.0.0.0:9090"
+external-ui: public
+secret:
+
+# 代理服务器配置
+allow-lan: false # 若开启务必设置用户验证以防暴露公网后被滥用
+authentication:
+  # - "username:password" # 用户验证（clash-cli on 会自动填充验证信息）
+
+# 自定义规则
+rules:
+  - DOMAIN,api64.ipify.org,DIRECT # 用于 clash-cli ui 获取真实公网 IP
+
+# tun 配置
+tun:
+  enable: false
+  stack: system
+  auto-route: true
+  auto-redir: true # clash
+  auto-redirect: true # mihomo
+  auto-detect-interface: true
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  strict-route: true
+  exclude-interface:
+    # - docker0
+    # - podman0
+
+# DNS 配置
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  nameserver:
+    - 114.114.114.114
+    - 8.8.8.8
