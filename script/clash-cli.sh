@@ -46,7 +46,7 @@ _clash_on() {
         }
     }
     _set_system_proxy
-    _okcat '已开启代理环境'
+    _okcat "$(_msg 'proxy_on')"
 }
 
 watch_proxy() {
@@ -58,7 +58,7 @@ watch_proxy() {
 }
 
 _clash_off() {
-    sudo systemctl stop "$BIN_KERNEL_NAME" && _okcat '已关闭代理环境' ||
+    sudo systemctl stop "$BIN_KERNEL_NAME" && _okcat "$(_msg 'proxy_off')" ||
         _failcat '关闭失败: 执行 "clash-cli status" 查看日志' || return 1
     _unset_system_proxy
 }
@@ -75,11 +75,11 @@ _clash_proxy() {
             return 1
         }
         _set_system_proxy
-        _okcat '已开启系统代理'
+        _okcat "$(_msg 'proxy_enabled')"
         ;;
     off)
         _unset_system_proxy
-        _okcat '已关闭系统代理'
+        _okcat "$(_msg 'proxy_disabled')"
         ;;
     status)
         local system_proxy_status=$(sudo "$BIN_YQ" '.system-proxy.enable' "$CLASH_CONFIG_MIXIN" 2>/dev/null)
@@ -119,7 +119,7 @@ _clash_ui() {
     local local_address="http://${local_ip}:${UI_PORT}/ui"
     printf "\n"
     printf "╔═══════════════════════════════════════════════╗\n"
-    printf "║                %s                  ║\n" "$(_okcat 'Web 控制台')"
+    printf "║                %s                  ║\n" "$(_okcat "$(_msg 'web_console')")"
     printf "║═══════════════════════════════════════════════║\n"
     printf "║                                               ║\n"
     printf "║     🔓 注意放行端口：%-5s                    ║\n" "$UI_PORT"
@@ -146,7 +146,7 @@ _merge_config_restart() {
 _clash_secret() {
     case "$#" in
     0)
-        _okcat "当前密钥：$(sudo "$BIN_YQ" '.secret // ""' "$CLASH_CONFIG_RUNTIME")"
+        _okcat "$(_msg 'current_secret')$(sudo "$BIN_YQ" '.secret // ""' "$CLASH_CONFIG_RUNTIME")"
         ;;
     1)
         sudo "$BIN_YQ" -i ".secret = \"$1\"" "$CLASH_CONFIG_MIXIN" || {
@@ -154,7 +154,7 @@ _clash_secret() {
             return 1
         }
         _merge_config_restart
-        _okcat "密钥更新成功，已重启生效"
+        _okcat "$(_msg 'secret_updated')"
         ;;
     *)
         _failcat "密钥不要包含空格或使用引号包围"
@@ -165,13 +165,13 @@ _clash_secret() {
 _tunstatus() {
     local tun_status=$(sudo "$BIN_YQ" '.tun.enable' "${CLASH_CONFIG_RUNTIME}")
     # shellcheck disable=SC2015
-    [ "$tun_status" = 'true' ] && _okcat 'Tun 状态：启用' || _failcat 'Tun 状态：关闭'
+    [ "$tun_status" = 'true' ] && _okcat "$(_msg 'tun_status_on')" || _failcat "$(_msg 'tun_status_off')"
 }
 
 _tunoff() {
     _tunstatus >/dev/null || return 0
     sudo "$BIN_YQ" -i '.tun.enable = false' "$CLASH_CONFIG_MIXIN"
-    _merge_config_restart && _okcat "Tun 模式已关闭"
+    _merge_config_restart && _okcat "$(_msg 'tun_disabled')"
 }
 
 _tunon() {
@@ -183,7 +183,7 @@ _tunon() {
         _tunoff >&/dev/null
         _error_quit '不支持的内核版本'
     }
-    _okcat "Tun 模式已开启"
+    _okcat "$(_msg 'tun_enabled')"
 }
 
 _clash_tun() {
@@ -227,10 +227,10 @@ _clash_update() {
     # 如果是自动更新模式，则设置定时任务
     [ "$is_auto" = true ] && {
         sudo grep -qs 'clash-cli update' "$CLASH_CRON_TAB" || echo "0 0 */2 * * $_SHELL -i -c 'clash-cli update $url'" | sudo tee -a "$CLASH_CRON_TAB" >&/dev/null
-        _okcat "已设置定时更新订阅" && return 0
+        _okcat "$(_msg 'auto_update_set')" && return 0
     }
 
-    _okcat '👌' "正在下载：原配置已备份..."
+    _okcat '👌' "$(_msg 'update_downloading')"
     sudo cat "$CLASH_CONFIG_RAW" | sudo tee "$CLASH_CONFIG_RAW_BAK" >&/dev/null
 
     _rollback() {
@@ -243,7 +243,7 @@ _clash_update() {
     _download_config "$CLASH_CONFIG_RAW" "$url" || _rollback "下载失败：已回滚配置"
     _valid_config "$CLASH_CONFIG_RAW" || _rollback "转换失败：已回滚配置，转换日志：$BIN_SUBCONVERTER_LOG"
 
-    _merge_config_restart && _okcat '🍃' '订阅更新成功'
+    _merge_config_restart && _okcat '🍃' "$(_msg 'update_success')"
     echo "$url" | sudo tee "$CLASH_CONFIG_URL" >&/dev/null
     _okcat '✅' "[$(date +"%Y-%m-%d %H:%M:%S")] 订阅更新成功：$url" | sudo tee -a "${CLASH_UPDATE_LOG}" >&/dev/null
 }
@@ -252,7 +252,7 @@ _clash_mixin() {
     case "$1" in
     -e)
         sudo vim "$CLASH_CONFIG_MIXIN" && {
-            _merge_config_restart && _okcat "配置更新成功，已重启生效"
+            _merge_config_restart && _okcat "$(_msg 'config_updated')"
         }
         ;;
     -r)
@@ -299,7 +299,60 @@ function clash-cli() {
         shift
         _clash_update "$@"
         ;;
+    lang)
+        _clash_lang "$@"
+        ;;
     *)
+        _show_help
+        ;;
+    esac
+}
+
+# 语言切换功能
+_clash_lang() {
+    local lang="$2"
+
+    case "$lang" in
+        "zh"|"en")
+            if set_language "$lang"; then
+                _msg "lang_switched"
+            else
+                echo "Error: Failed to set language"
+            fi
+            ;;
+        "")
+            _msg "current_lang"
+            ;;
+        *)
+            _msg "lang_usage"
+            ;;
+    esac
+}
+
+# 显示帮助信息
+_show_help() {
+    local current_lang=$(get_current_lang)
+
+    if [[ "$current_lang" == "en" ]]; then
+        cat <<EOF
+
+Usage:
+    clash-cli COMMAND [OPTION]
+
+Commands:
+    on                      Enable proxy
+    off                     Disable proxy
+    proxy    [on|off]       System proxy
+    ui                      Panel address
+    status                  Kernel status
+    tun      [on|off]       Tun mode
+    mixin    [-e|-r]        Mixin configuration
+    secret   [SECRET]       Web secret
+    update   [auto|log]     Update subscription
+    lang     [zh|en]        Switch language
+
+EOF
+    else
         cat <<EOF
 
 Usage:
@@ -315,8 +368,8 @@ Commands:
     mixin    [-e|-r]        Mixin 配置
     secret   [SECRET]       Web 密钥
     update   [auto|log]     更新订阅
+    lang     [zh|en]        切换语言
 
 EOF
-        ;;
-    esac
+    fi
 }

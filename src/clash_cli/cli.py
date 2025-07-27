@@ -16,27 +16,28 @@ from .core.proxy import ProxyManager
 from .core.installer import ClashInstaller
 from .exceptions import ClashCliError
 from .utils import success_message, error_message, info_message, console
+from .i18n import _, get_current_lang, set_language, get_help_text
 
 
 @click.group(invoke_without_command=True)
-@click.option('--version', is_flag=True, help='显示版本信息')
+@click.option('--version', is_flag=True, help='显示版本信息 / Show version')
 @click.pass_context
 def cli(ctx, version):
-    """clash-cli - Linux 一键安装 Clash 代理工具"""
+    """clash-cli - Linux 一键安装 Clash 代理工具 / Easy Linux Command Line Proxy"""
     if version:
         click.echo(f"clash-cli version {__version__}")
         return
-    
+
     if ctx.invoked_subcommand is None:
-        # 显示帮助信息
-        click.echo(ctx.get_help())
+        # 显示多语言帮助信息
+        click.echo(get_help_text())
 
 
 @cli.command()
-@click.option('--kernel', type=click.Choice(['mihomo', 'clash']), default='mihomo', help='选择内核类型')
-@click.option('--subscription', '-s', help='订阅链接')
+@click.option('--kernel', type=click.Choice(['mihomo', 'clash']), default='mihomo', help='选择内核类型 / Choose kernel type')
+@click.option('--subscription', '-s', help='订阅链接 / Subscription URL')
 def install(kernel, subscription):
-    """安装 Clash"""
+    """安装 Clash / Install Clash"""
     try:
         installer = ClashInstaller()
         
@@ -59,7 +60,7 @@ def install(kernel, subscription):
 
 @cli.command()
 def uninstall():
-    """卸载 Clash"""
+    """卸载 Clash / Uninstall Clash"""
     try:
         if not click.confirm('确定要卸载 Clash 吗？这将删除所有配置文件'):
             return
@@ -77,7 +78,7 @@ def uninstall():
 
 @cli.command()
 def on():
-    """开启代理"""
+    """开启代理 / Enable proxy"""
     try:
         service = ClashService()
         proxy_manager = ProxyManager()
@@ -88,7 +89,7 @@ def on():
         # 设置系统代理
         proxy_manager.set_system_proxy()
         
-        success_message("已开启代理环境")
+        success_message(_("proxy_on"))
         
     except ClashCliError as e:
         error_message(str(e))
@@ -100,7 +101,7 @@ def on():
 
 @cli.command()
 def off():
-    """关闭代理"""
+    """关闭代理 / Disable proxy"""
     try:
         service = ClashService()
         proxy_manager = ProxyManager()
@@ -111,7 +112,7 @@ def off():
         # 清除系统代理
         proxy_manager.unset_system_proxy()
         
-        success_message("已关闭代理环境")
+        success_message(_("proxy_off"))
         
     except ClashCliError as e:
         error_message(str(e))
@@ -169,11 +170,11 @@ def proxy(ctx):
             status = proxy_manager.get_proxy_status()
             
             if status['enabled']:
-                success_message("系统代理：开启")
+                success_message(_("proxy_enabled"))
                 info_message(f"HTTP 代理：{status['proxy_info']['http_proxy']}")
                 info_message(f"SOCKS 代理：{status['proxy_info']['socks_proxy']}")
             else:
-                error_message("系统代理：关闭")
+                error_message(_("proxy_disabled"))
                 
         except Exception as e:
             error_message(f"获取代理状态失败: {e}")
@@ -274,9 +275,9 @@ def tun(ctx):
             tun_enabled = proxy_manager.get_tun_status()
             
             if tun_enabled:
-                success_message("Tun 状态：启用")
+                success_message(_("tun_status_on"))
             else:
-                error_message("Tun 状态：关闭")
+                error_message(_("tun_status_off"))
                 
         except Exception as e:
             error_message(f"获取 Tun 状态失败: {e}")
@@ -293,7 +294,9 @@ def on():
         service = ClashService()
         if service.is_running():
             service.restart()
-        
+
+        success_message(_("tun_enabled"))
+
     except ClashCliError as e:
         error_message(str(e))
         sys.exit(e.code)
@@ -407,7 +410,7 @@ def edit():
         if service.is_running():
             service.restart()
 
-        success_message("配置更新成功")
+        success_message(_("config_updated"))
 
     except Exception as e:
         error_message(f"编辑配置失败: {e}")
@@ -489,10 +492,33 @@ def off():
         service = ClashService()
         if service.is_running():
             service.restart()
-        
+
+        success_message(_("tun_disabled"))
+
     except ClashCliError as e:
         error_message(str(e))
         sys.exit(e.code)
     except Exception as e:
         error_message(f"关闭 Tun 模式失败: {e}")
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument('language', required=False)
+def lang(language):
+    """切换语言 / Switch language"""
+    try:
+        if language in ['zh', 'en']:
+            if set_language(language):
+                success_message(_('lang_switched'))
+            else:
+                error_message("Failed to set language")
+                sys.exit(1)
+        elif language is None:
+            info_message(_('current_lang'))
+        else:
+            info_message(_('lang_usage'))
+
+    except Exception as e:
+        error_message(f"Language operation failed: {e}")
         sys.exit(1)

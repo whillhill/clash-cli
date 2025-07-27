@@ -1,4 +1,4 @@
-# linux命令行轻松使用代理：clash-cli
+# linux命令行轻松使用代理：clash-cli  
 
 **Language**: [English](README_en.md) | [中文](README_zh.md)
 
@@ -12,7 +12,7 @@
 **🎉 支持两种安装方式：Shell 脚本和 Python 包！**
 
 
-## ✨ 
+## ✨ 特性
 
 - 🚀 **一键安装**：自动下载并配置 Clash 内核
 - 🔧 **智能管理**：统一的 `clash-cli` 命令行界面

@@ -51,7 +51,7 @@ systemctl daemon-reload
 systemctl enable "$BIN_KERNEL_NAME" >&/dev/null || _failcat '💥' "设置自启失败" && _okcat '🚀' "已设置开机自启"
 
 _clash_ui
-_okcat '🎉' 'enjoy 🎉'
+_okcat '🎉' "$(_msg 'enjoy')"
 clash-cli
 # shellcheck disable=SC2016
 [ "$SUDO_USER" != 'root' ] && _okcat '请执行 clash-cli on 开启代理环境'

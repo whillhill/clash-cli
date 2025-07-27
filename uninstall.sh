@@ -17,5 +17,5 @@ rm -rf "$RESOURCES_BIN_DIR"
 sed -i '/clash-cli update/d' "$CLASH_CRON_TAB" >&/dev/null
 _set_rc unset
 
-_okcat '✨' '已卸载，相关配置已清除'
+_okcat '✨' "$(_msg 'uninstalled')"
 _quit

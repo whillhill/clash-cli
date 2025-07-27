@@ -4,6 +4,103 @@
 [ -n "$BASH_VERSION" ] && set +o noglob
 [ -n "$ZSH_VERSION" ] && setopt glob no_nomatch
 
+# ==================== 多语言支持 ====================
+CLASH_LANG_CONF="${CLASH_BASE_DIR}/lang.conf"
+
+# 多语言消息字典
+declare -A MSG_ZH MSG_EN
+
+# 中文消息
+MSG_ZH["proxy_on"]="😼 已开启代理环境"
+MSG_ZH["proxy_off"]="😼 已关闭代理环境"
+MSG_ZH["proxy_enabled"]="😼 系统代理：开启"
+MSG_ZH["proxy_disabled"]="😼 系统代理：关闭"
+MSG_ZH["tun_enabled"]="😼 Tun 模式已开启"
+MSG_ZH["tun_disabled"]="😼 Tun 模式已关闭"
+MSG_ZH["tun_status_on"]="😼 Tun 状态：开启"
+MSG_ZH["tun_status_off"]="😾 Tun 状态：关闭"
+MSG_ZH["secret_updated"]="😼 密钥更新成功，已重启生效"
+MSG_ZH["current_secret"]="😼 当前密钥："
+MSG_ZH["update_success"]="🍃 订阅更新成功"
+MSG_ZH["update_downloading"]="👌 正在下载：原配置已备份..."
+MSG_ZH["update_validating"]="🍃 下载成功：内核验证配置..."
+MSG_ZH["auto_update_set"]="😼 已设置定时更新订阅"
+MSG_ZH["mixin_view"]="😼 less 查看 mixin 配置"
+MSG_ZH["mixin_edit"]="😼 vim 编辑 mixin 配置"
+MSG_ZH["mixin_runtime"]="😼 less 查看 运行时 配置"
+MSG_ZH["web_console"]="😼 Web 控制台"
+MSG_ZH["note_open_port"]="🔓 注意放行端口：9090"
+MSG_ZH["panel_address"]="🌍 面板地址：http://127.0.0.1:9090/ui"
+MSG_ZH["uninstalled"]="✨ 已卸载，相关配置已清除"
+MSG_ZH["enjoy"]="🎉 enjoy 🎉"
+MSG_ZH["lang_switched"]="语言已切换为中文"
+MSG_ZH["current_lang"]="当前语言：中文 (zh)"
+MSG_ZH["lang_usage"]="用法: clash-cli lang [zh|en]"
+MSG_ZH["config_updated"]="配置更新成功，已重启生效"
+
+# 英文消息
+MSG_EN["proxy_on"]="😼 Proxy environment enabled"
+MSG_EN["proxy_off"]="😼 Proxy environment disabled"
+MSG_EN["proxy_enabled"]="😼 System proxy: enabled"
+MSG_EN["proxy_disabled"]="😼 System proxy: disabled"
+MSG_EN["tun_enabled"]="😼 Tun mode enabled"
+MSG_EN["tun_disabled"]="😼 Tun mode disabled"
+MSG_EN["tun_status_on"]="😼 Tun status: enabled"
+MSG_EN["tun_status_off"]="😾 Tun status: disabled"
+MSG_EN["secret_updated"]="😼 Secret updated successfully, restarted"
+MSG_EN["current_secret"]="😼 Current secret: "
+MSG_EN["update_success"]="🍃 Subscription updated successfully"
+MSG_EN["update_downloading"]="👌 Downloading: Original config backed up..."
+MSG_EN["update_validating"]="🍃 Download successful: Kernel validating config..."
+MSG_EN["auto_update_set"]="😼 Scheduled subscription update set"
+MSG_EN["mixin_view"]="😼 less view mixin configuration"
+MSG_EN["mixin_edit"]="😼 vim edit mixin configuration"
+MSG_EN["mixin_runtime"]="😼 less view runtime configuration"
+MSG_EN["web_console"]="😼 Web Console"
+MSG_EN["note_open_port"]="🔓 Note: Open port: 9090"
+MSG_EN["panel_address"]="🌍 Panel URL: http://127.0.0.1:9090/ui"
+MSG_EN["uninstalled"]="✨ Uninstalled, related configurations cleared"
+MSG_EN["enjoy"]="🎉 enjoy 🎉"
+MSG_EN["lang_switched"]="Language switched to English"
+MSG_EN["current_lang"]="Current language: English (en)"
+MSG_EN["lang_usage"]="Usage: clash-cli lang [zh|en]"
+MSG_EN["config_updated"]="Configuration updated successfully, restarted"
+
+# 获取当前语言设置
+get_current_lang() {
+    if [[ -f "$CLASH_LANG_CONF" ]]; then
+        source "$CLASH_LANG_CONF" 2>/dev/null
+        echo "${LANG:-zh}"
+    else
+        echo "zh"
+    fi
+}
+
+# 设置语言
+set_language() {
+    local lang="$1"
+    if [[ "$lang" == "zh" || "$lang" == "en" ]]; then
+        mkdir -p "$(dirname "$CLASH_LANG_CONF")"
+        echo "LANG=$lang" > "$CLASH_LANG_CONF"
+        return 0
+    else
+        return 1
+    fi
+}
+
+# 翻译函数
+_msg() {
+    local key="$1"
+    local current_lang=$(get_current_lang)
+
+    if [[ "$current_lang" == "en" ]]; then
+        echo "${MSG_EN[$key]:-$key}"
+    else
+        echo "${MSG_ZH[$key]:-$key}"
+    fi
+}
+# ==================== 多语言支持结束 ====================
+
 URL_GH_PROXY='https://gh-proxy.com/'
 URL_CLASH_UI="http://board.zash.run.place"
 
