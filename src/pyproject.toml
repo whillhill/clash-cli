@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clash-cli"
-version = "1.2.11"
+version = "1.2.12"
 description = "Linux命令行使用Clash代理"
 readme = "README.md"
 license = "MIT"
@@ -67,7 +67,6 @@ clash_cli = [
     "resources/script/*",
     "resources/resources/*",
     "resources/resources/zip/*",
-    "resources/resources/fallback/*",
 ]
 
 [tool.black]

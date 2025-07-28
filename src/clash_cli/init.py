@@ -184,7 +184,6 @@ class ClashInitializer:
 
             # 提取其他资源文件
             self._extract_directory('resources/resources/zip', resources_dir / 'zip')
-            self._extract_directory('resources/resources/fallback', resources_dir / 'fallback')
 
             # 提取 Country.mmdb 如果存在
             if pkg_resources.resource_exists(self.package_name, 'resources/resources/Country.mmdb'):
@@ -215,24 +214,11 @@ class ClashInitializer:
             if 'zip' in resource_path:
                 zip_files = [
                     'mihomo-linux-amd64-compatible-v1.19.2.gz',
-                    'subconverter_linux64.tar.gz', 
+                    'subconverter_linux64.tar.gz',
                     'yacd.tar.xz',
                     'yq_linux_amd64.tar.gz'
                 ]
                 for file_name in zip_files:
-                    full_path = f"{resource_path}/{file_name}"
-                    if pkg_resources.resource_exists(self.package_name, full_path):
-                        content = pkg_resources.resource_string(self.package_name, full_path)
-                        (target_path / file_name).write_bytes(content)
-                        click.echo(f"  ✓ {resource_path}/{file_name}")
-            
-            elif 'fallback' in resource_path:
-                fallback_files = [
-                    'mihomo-linux-amd64-v1.17.0.gz',
-                    'versions.json',
-                    'yq_linux_amd64.tar.gz'
-                ]
-                for file_name in fallback_files:
                     full_path = f"{resource_path}/{file_name}"
                     if pkg_resources.resource_exists(self.package_name, full_path):
                         content = pkg_resources.resource_string(self.package_name, full_path)
