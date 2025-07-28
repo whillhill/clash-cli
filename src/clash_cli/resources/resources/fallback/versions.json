@@ -1,0 +1,37 @@
+{
+  "fallback_versions": {
+    "yq": {
+      "version": "v4.40.5",
+      "release_date": "2024-01-15",
+      "description": "稳定版本的 YAML 处理工具",
+      "files": {
+        "linux_amd64": "yq_linux_amd64.tar.gz",
+        "linux_arm64": "yq_linux_arm64.tar.gz"
+      }
+    },
+    "mihomo": {
+      "version": "v1.17.0",
+      "release_date": "2024-06-01",
+      "description": "稳定版本的 Mihomo 内核",
+      "files": {
+        "linux_amd64": "mihomo-linux-amd64-v1.17.0.gz",
+        "linux_arm64": "mihomo-linux-arm64-v1.17.0.gz"
+      }
+    },
+    "clash": {
+      "version": "v1.18.0",
+      "release_date": "2024-05-15",
+      "description": "稳定版本的 Clash 内核",
+      "files": {
+        "linux_amd64": "clash-linux-amd64-v1.18.0.gz",
+        "linux_arm64": "clash-linux-arm64-v1.18.0.gz"
+      }
+    }
+  },
+  "notes": [
+    "这些是预置的稳定版本，用于网络下载失败时的备用方案",
+    "版本选择原则：稳定性优于新特性",
+    "定期更新：随项目发布周期更新预置版本",
+    "文件完整性：所有预置文件都经过验证"
+  ]
+}

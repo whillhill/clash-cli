@@ -8,40 +8,20 @@
 ![PyPI](https://img.shields.io/pypi/v/clash-cli)
 ![Python](https://img.shields.io/pypi/pyversions/clash-cli)
 
-
-**🎉 支持两种安装方式：Shell 脚本和 Python 包！**
-
-
-## ✨ 
-
-- 🚀 **一键安装**：自动下载并配置 Clash 内核
-- 🔧 **智能管理**：统一的 `clash-cli` 命令行界面
-- 🌐 **订阅转换**：内置 subconverter 本地订阅转换
-- 🎯 **多内核支持**：默认 mihomo，可选 clash 内核
-- 🐚 **多 Shell 支持**：兼容 bash、zsh、fish
-- 🔒 **系统集成**：systemd 服务管理，开机自启
-- 🌍 **Web 控制台**：可视化节点管理和监控
-- 📱 **Tun 模式**：全局代理，支持 Docker 容器
-- 🐍 **Python 支持**：现代化的 pip 安装方式
-
-## 📋 环境要求
-
-- **操作系统**：Linux
-- **用户权限**：`root` 或 `sudo` 权限
-- **Shell 环境**：`bash`、`zsh`、`fish` 任一
+![image-20250729005938568](http://www.text2mcp.com/img/image-20250729005938568.png)
 
 ## 🚀 快速安装
 
-> 两种安装方式**仅安装方法不同**，安装完成后的**使用方式完全相同**！
+> 两种安装方式**仅安装方法和卸载方法不同**，安装完成后的**使用方式完全相同**！
 
 ### 📊 安装方式对比
 
-| 方面 | Python 包安装 | Shell 脚本安装 |
-|------|---------------|----------------|
-| **安装命令** | `pip install clash-cli` | `git clone + bash install.sh` |
+| 方面 | Python 包安装（推荐） | Shell 脚本安装 |
+|------|---------------------|----------------|
+| **安装命令** | `pip install clash-cli` + `sudo clash-cli install` | `git clone` + `sudo bash install.sh` |
 | **依赖管理** | pip 自动处理 | 脚本手动处理 |
 | **更新方式** | `pip install -U clash-cli` | 重新 git clone |
-| **卸载方式** | `pip uninstall clash-cli` | `bash uninstall.sh` |
+| **卸载方式** | `sudo clash-cli uninstall` + `pip uninstall clash-cli` | `sudo bash uninstall.sh` |
 | **使用命令** | ✅ **完全相同** | ✅ **完全相同** |
 
 ### 方式一：Python 包安装（推荐）
@@ -50,10 +30,13 @@
 # 1. 安装 clash-cli 工具
 pip install clash-cli
 
-# 2. 安装 Clash 服务（需要 sudo 权限）
+# 2. 初始化clash-cli(可选，解决sudo问题,不需要sudo权限)
+clash-cli init
+
+# 3. 安装 Clash 服务（需要 sudo 权限）
 sudo clash-cli install
 
-# 3. 开始使用
+# 4. 开始使用
 clash-cli on
 ```
 
@@ -71,22 +54,6 @@ git clone --branch main --depth 1 https://github.com/whillhill/clash-cli.git \
 
 > **重要**：无论使用哪种方式安装，以下所有命令都**完全相同**！
 
-### 🎯 首次配置（仅 Python 包需要）
-
-如果您使用 Python 包安装，需要先安装 Clash 服务：
-
-```bash
-# 安装 Clash 服务（需要 sudo 权限）
-sudo clash-cli install
-
-# 指定订阅链接安装
-sudo clash-cli install -s "https://your-subscription-url.com"
-
-# 使用 clash 内核（默认是 mihomo）
-sudo clash-cli install --kernel clash
-```
-
-> **说明**：Shell 脚本安装会在安装过程中自动完成服务配置
 
 ### 📋 基本命令
 
@@ -98,6 +65,9 @@ Usage:
     clash-cli COMMAND [OPTION]
 
 Commands:
+    install              安装 Clash 服务（仅 Python 包）
+    uninstall            卸载 Clash 服务（仅 Python 包）
+    init                 提取脚本到目录（仅 Python 包）
     on                   开启代理
     off                  关闭代理
     ui                   面板地址
@@ -258,22 +228,24 @@ $ clash-cli lang zh
 
 | 安装方式 | 卸载命令 | 说明 |
 |----------|----------|------|
-| **Python 包** | `pip uninstall clash-cli` | 卸载 clash-cli 工具 |
+| **Python 包** | `sudo clash-cli uninstall` + `pip uninstall clash-cli` | 先卸载服务，再卸载工具 |
 | **Shell 脚本** | `sudo bash uninstall.sh` | 运行卸载脚本 |
 
 ### 完整卸载步骤
 
-**无论哪种安装方式，都需要先停止服务**：
-
+#### Python 包方式
 ```bash
-# 1. 停止代理服务
-clash-cli off
+# 1. 卸载 Clash 服务和配置
+sudo clash-cli uninstall
 
-# 2. 根据安装方式选择卸载命令
-# Python 包方式：
+# 2. 卸载 clash-cli 工具（可选）
 pip uninstall clash-cli
+```
 
-# Shell 脚本方式：
+#### Shell 脚本方式
+```bash
+# 进入项目目录并运行卸载脚本
+cd clash-cli
 sudo bash uninstall.sh
 ```
 
@@ -282,6 +254,7 @@ sudo bash uninstall.sh
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
 
 ## 📄 许可证
 
