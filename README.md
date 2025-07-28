@@ -255,6 +255,10 @@ sudo bash uninstall.sh
 
 欢迎提交 Issue 和 Pull Request！
 
+## 🤝 Thanks
+
+nelvko/clash-for-linux-install
+
 
 ## 📄 许可证
 
